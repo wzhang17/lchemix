@@ -1,0 +1,26 @@
+Package: lchemix
+Version: 0.0.0.9000
+Title: A couple based joint latent class model with a dependence structure between chemical patterns and the risk
+Authors@R: c(person(given = "Beom Seuk",
+           family = "Hwang",
+           role = "aut"),
+    person(given = "Zhen",
+           family = "Chen",
+           role = "aut"),
+    person(given = "Germaine M. Buck",
+           family = "Louis",
+           role ="aut"),
+    person(given = "Paul S.",
+           family = "Albert",
+           role = "aut"),
+    person(given = "Weimin",
+           family = "Zhang",
+           role = "cre",
+           email = "zhangwm@hotmail.com"))
+Description: A joint latent class model where a hierarchical structure exists, with an interaction between female and male partners of a couple. A Bayesian perspective to inference and Markov chain Monte Carlo algorithms to obtain posterior estimates of model parameters.
+License: None
+Imports: MCMCpack,
+        mvtnorm
+Encoding: UTF-8
+LazyData: TRUE
+RoxygenNote: 7.0.2
