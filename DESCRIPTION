@@ -24,3 +24,5 @@ Imports: MCMCpack,
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.0.2
+URL: http://github.com/wzhang17/lchemix.git
+BugReports: http://github.com/wzhang17/lchemix.git/issues
