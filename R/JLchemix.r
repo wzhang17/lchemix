@@ -118,7 +118,7 @@
 #' library(MCMCpack)
 #' library(mvtnorm)
 #' data(sampledata)
-#' JLchemix()
+#' try1 <-lchemix:::JLchemix()
 
 
 ##########################################
