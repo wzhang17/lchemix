@@ -7,14 +7,12 @@
 JLchemix(
   nsim = 700,
   nburn = 500,
-  Yvariable = Y,
-  X.f_mat = X.f,
-  X.m_mat = X.m,
-  covariate_f_mat = covariate_f,
-  covariate_m_mat = covariate_m,
+  Yvariable,
+  X.f_mat,
+  X.m_mat,
+  covariate_f_mat,
+  covariate_m_mat,
   seed_num = 678443068,
-  I = length(Yvariable),
-  J = dim(V.f_mat)[2],
   K = 3,
   alpha.0f = -6,
   alpha.1f = 1,
@@ -46,7 +44,6 @@ JLchemix(
     1.1740925, 1.3381932, 1.36568913, 0.55896975, 1.41116326, 3.3092799, 1.51011954,
     0.90399847, 0.40348049, 1.27435217, 1.53464794, 2.73497557, 1.91075938, 0.93572173,
     2.02485773, 3.82461971),
-  random.b = cbind(b.0f, b.1f, b.0m, b.1m),
   eta.0f = 2,
   eta.1f = 0.5,
   eta.0m = 2,
@@ -80,7 +77,6 @@ JLchemix(
   sig2.a1f = 100,
   sig2.a0m = 100,
   sig2.a1m = 100,
-  Sigma.a = diag(c(sig2.a0f, sig2.a1f, sig2.a0m, sig2.a1m), 4),
   mu.e0f = 0,
   mu.e1f = 0,
   mu.e0m = 0,
@@ -91,10 +87,10 @@ JLchemix(
   sig2.e1m = 100,
   a.tau = 1,
   b.tau = 1,
-  mu.lf = rep(0, 5),
-  mu.lm = rep(0, 5),
-  Sigma.lf = 10 * diag(5),
-  Sigma.lm = 10 * diag(5),
+  mu.lf = rep(0, covariate_num),
+  mu.lm = rep(0, covariate_num),
+  Sigma.lf = 10 * diag(covariate_num),
+  Sigma.lm = 10 * diag(covariate_num),
   s.b0 = 2.4^2,
   s.b1f = 2.4^2,
   s.b1m = 2.4^2,
@@ -115,15 +111,9 @@ JLchemix(
   cov.r = diag(4),
   s.lf = 2.4^2,
   s.lm = 2.4^2,
-  cov.lf = diag(5),
-  cov.lm = diag(5),
   eps = 0.01,
-  Sigma.0 = diag(4),
   nu = 4,
-  e.f = rep(1, K),
-  e.m = rep(1, K),
-  dff = rep(0, K),
-  dmm = rep(0, K)
+  Sigma.0 = diag(4)
 )
 }
 \arguments{
@@ -132,6 +122,10 @@ JLchemix(
 \item{nburn}{Burn in number}
 
 \item{Yvariable}{Binary indicating dependent variable for the couple disease status, 1 for disease}
+
+\item{X.f_mat}{chemical exposure variables for female individual}
+
+\item{X.m_mat}{chemical exposure variables for male individual}
 
 \item{covariate_f_mat}{subject-specific covariates such as age or smoking status for female individual}
 
@@ -299,9 +293,11 @@ JLchemix(
 
 \item{s.lm}{Initial value for conditional posterior distribution of male lambda for adaptive Metropolis algorithm}
 
-\item{X.f_variable}{chemical exposure variables for female individual}
+\item{eps}{Initial value for beta.0}
 
-\item{X.m_variable}{chemical exposure variables for male individual}
+\item{nu}{Initial value for Sigma.b}
+
+\item{Sigma.0}{Initial value for Sigma.b}
 }
 \value{
 A list of posterior estimates, latent class probability estimates and DIC
@@ -315,18 +311,21 @@ A Bayesian framework examines the chemical biomarker profile from each member of
 and the risk of disease. The complex chemical mixtures on each couple link to disease risk through unobserved
 latent classes. we posit that two sets of latent classes, each characterizing the chemical mixture patterns
 of one partner of the couple, are linked to the risk of disease through a logistic model with main and
-interaction  effects between latent classes. Markov chain Monte Carlo algorithms was used to obtain posterior
-estimates of model parameters.The user supplies data and priors, and a list of posterior estimates of
-model parameters is returned.
+interaction  effects between latent classes. The semicontinuous chimical biomarker viarables (1/4 zeros and
+right-skewed non-zero values) are processed through Tobit modeling framework. Markov chain Monte Carlo
+algorithms was used to obtain posterior estimates of model parameters.The user supplies data and priors,
+and a list of posterior estimates of model parameters is returned.
 }
 \examples{
 library(MCMCpack)
 library(mvtnorm)
 data(sampledata)
-JLchemix()
+try1 <-lchemix:::JLchemix(Yvariable= sampledata[,1], X.f_mat = sampledata[,2:37],
+X.m_mat = sampledata[,38:73], covariate_f_mat = sampledata[,74:78],
+covariate_m_mat = sampledata[,79:83])
 }
 \references{
 Beom Seuk Hwang, Zhen Chen,  Germaine M. Buck Louis, and Paul S. Albert. (2018)
 \emph{A Bayesian multi-dimensional couple-based latent risk model with an application to infertility}.
-Biometrics, 75, 315--325. \url{https://doi.org/10.1111/biom.12972/}
+Biometrics, 75, 315--325. \url{https://doi.org/10.1111/biom.12972}
 }

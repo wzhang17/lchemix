@@ -2,3 +2,4 @@
 
 import(MCMCpack)
 import(mvtnorm)
+import(stats)

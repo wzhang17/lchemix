@@ -1,5 +1,5 @@
 #' Latent Class Models for Joint Analysis of Disease Prevalence and High-dimensional Semicontinuous Chimical Biomarker Data
-#' @import MCMCpack mvtnorm
+#' @import MCMCpack mvtnorm stats
 #' @description This function fit a couple-based joint latent class model with an interaction between a
 #' couple(e.g., female and male partners) and High-dimensional semicontinuous chemical biomarker
 #' for each partner of the couple. This formulation introduces a dependence structure between the chemical
@@ -8,15 +8,16 @@
 #' and the risk of disease. The complex chemical mixtures on each couple link to disease risk through unobserved
 #' latent classes. we posit that two sets of latent classes, each characterizing the chemical mixture patterns
 #' of one partner of the couple, are linked to the risk of disease through a logistic model with main and
-#' interaction  effects between latent classes. Markov chain Monte Carlo algorithms was used to obtain posterior
-#' estimates of model parameters.The user supplies data and priors, and a list of posterior estimates of
-#' model parameters is returned.
+#' interaction  effects between latent classes. The semicontinuous chimical biomarker viarables (1/4 zeros and
+#' right-skewed non-zero values) are processed through Tobit modeling framework. Markov chain Monte Carlo
+#' algorithms was used to obtain posterior estimates of model parameters.The user supplies data and priors,
+#' and a list of posterior estimates of model parameters is returned.
 #'
 #' @param nsim Number of simulations
 #' @param nburn Burn in number
 #' @param Yvariable Binary indicating dependent variable for the couple disease status, 1 for disease
-#' @param X.f_variable chemical exposure variables for female individual
-#' @param X.m_variable chemical exposure variables for male individual
+#' @param X.f_mat chemical exposure variables for female individual
+#' @param X.m_mat chemical exposure variables for male individual
 #' @param covariate_f_mat subject-specific covariates such as age or smoking status for female individual
 #' @param covariate_m_mat subject-specific covariates such as age or smoking status for male individual
 # #' @param U.f_mat Binary nonzero measurement indicator for female individual
@@ -104,6 +105,9 @@
 #' @param cov.r Initial value for conditional posterior distribution of random effect b for adaptive Metropolis algorithm
 #' @param s.lf Initial value for conditional posterior distribution of female lambda for adaptive Metropolis algorithm
 #' @param s.lm Initial value for conditional posterior distribution of male lambda for adaptive Metropolis algorithm
+#' @param eps Initial value for beta.0
+#' @param Sigma.0 Initial value for Sigma.b
+#' @param nu Initial value for Sigma.b
 # #' @keywords
 # #' @details
 #'
@@ -113,12 +117,14 @@
 #' @references
 #' Beom Seuk Hwang, Zhen Chen,  Germaine M. Buck Louis, and Paul S. Albert. (2018)
 #' \emph{A Bayesian multi-dimensional couple-based latent risk model with an application to infertility}.
-#' Biometrics, 75, 315--325. \url{https://doi.org/10.1111/biom.12972/}
+#' Biometrics, 75, 315--325. \url{https://doi.org/10.1111/biom.12972}
 #' @examples
 #' library(MCMCpack)
 #' library(mvtnorm)
 #' data(sampledata)
-#' try1 <-lchemix:::JLchemix()
+#' try1 <-lchemix:::JLchemix(Yvariable= sampledata[,1], X.f_mat = sampledata[,2:37],
+#' X.m_mat = sampledata[,38:73], covariate_f_mat = sampledata[,74:78],
+#' covariate_m_mat = sampledata[,79:83])
 
 
 ##########################################
@@ -131,19 +137,17 @@
 
 JLchemix<-function(nsim=700,
                 nburn=500,
-                Yvariable= Y,
-                X.f_mat = X.f,
-                X.m_mat = X.m,
-                covariate_f_mat = covariate_f,
-                covariate_m_mat = covariate_m,
+                Yvariable ,
+                X.f_mat  ,
+                X.m_mat  ,
+                covariate_f_mat  ,
+                covariate_m_mat  ,
 #                U.f_mat = U.f,
 #                U.m_mat = U.m,
 #                V.f_mat = V.f,
 #                V.m_mat = V.m,
                 seed_num = 678443068,
 
-                I=length(Yvariable) ,
-                J=dim(V.f_mat)[2] ,
 
                 # maximum number of classes
                 K=3,
@@ -186,7 +190,7 @@ JLchemix<-function(nsim=700,
                           1.33819320,  1.36568913,  0.55896975,  1.41116326,  3.30927990,  1.51011954,  0.90399847,
                           0.40348049,  1.27435217,  1.53464794,  2.73497557,  1.91075938,  0.93572173,  2.02485773,
                           3.82461971),
-                random.b=cbind(b.0f,b.1f,b.0m,b.1m),
+
                 eta.0f=2,
                 eta.1f=0.5,
                 eta.0m=2,
@@ -242,7 +246,7 @@ JLchemix<-function(nsim=700,
                 sig2.a1f=100,
                 sig2.a0m=100,
                 sig2.a1m=100,
-                Sigma.a=diag(c(sig2.a0f,sig2.a1f,sig2.a0m,sig2.a1m),4),
+
 
                 mu.e0f=0,
                 mu.e1f=0,
@@ -257,10 +261,10 @@ JLchemix<-function(nsim=700,
                 a.tau=1,
                 b.tau=1,
 
-                mu.lf=rep(0,5),
-                mu.lm=rep(0,5),
-                Sigma.lf=10*diag(5),
-                Sigma.lm=10*diag(5),
+                mu.lf=rep(0,covariate_num),
+                mu.lm=rep(0,covariate_num),
+                Sigma.lf=10*diag(covariate_num),
+                Sigma.lm=10*diag(covariate_num),
 
 
 #                iset=1:I,
@@ -291,41 +295,33 @@ JLchemix<-function(nsim=700,
                 s.lf=2.4^2,
                 s.lm=2.4^2,
 
-                cov.lf=diag(5),
-                cov.lm=diag(5),
-
                 eps=0.01,
-
-                Sigma.0=diag(4),
                 nu=4,
+                Sigma.0=diag(4)
 
-                e.f=rep(1,K),
-                e.m=rep(1,K),
-
-                dff=rep(0,K),
-                dmm=rep(0,K)
 ){
   #ptm=proc.time()
-  force(seed)
-  set.seed(seed)
+  force(seed_num)
+  set.seed(seed_num)
   #Create U matrix: if x !=0 then 1 else 0
-  U.f_mat = X.f
-  U.f_mat[is.na(U.f_mat)]=0
-  U.f_mat[U.f_mat !=0]= 1
-  U.m_mat = X.m
-  U.m_mat[is.na(U.m_mat)]=0
-  U.m_mat[U.m_mat !=0]= 1
+  U.f = X.f_mat
+  U.f[is.na(U.f)]=0
+  U.f[U.f !=0]= 1
+  U.m = X.m_mat
+  U.m[is.na(U.m)]=0
+  U.m[U.m !=0]= 1
 
     #Create V matrix: if x !=0 then x
-  V.f_mat = X.f
-  V.f_mat[V.f_mat ==0]= NA
-  V.m_mat = X.m
-  V.m_mat[V.m_mat ==0]= NA
+  V.f = X.f_mat
+  V.f[V.f ==0]= NA
+  V.m = X.m_mat
+  V.m[V.m ==0]= NA
 
-  I=length(Yvariable)
 #  force(I)
-  J=dim(V.f_mat)[2]
 #  force(J)
+  I=length(Yvariable)
+  J=dim(X.f_mat)[2]
+  covariate_num <- dim(covariate_m_mat)[2]
   #pi.f=rep(1,K)/K    # 2-class model
   #force(pi.f)
   #pi.m=rep(1,K)/K    # 2-class model
@@ -354,6 +350,10 @@ JLchemix<-function(nsim=700,
   lambda.m=c(lambda.1m,lambda.2m,lambda.3m,lambda.4m,lambda.5m)
   xlambda.m=covariate_m_mat%*%lambda.m
 
+  random.b=cbind(b.0f,b.1f,b.0m,b.1m)
+  cov.lf=diag(covariate_num)
+  cov.lm=diag(covariate_num)
+
 #  force(mu.ij.f)     #=matrix(1,I,J)
 #  force(mu.ij.m)     #=matrix(1,I,J)
   mu.ij.f=matrix(1,I,J)
@@ -369,17 +369,25 @@ JLchemix<-function(nsim=700,
   #force(mu.a)       #=c(mu.a0f,mu.a1f,mu.a0m,mu.a1m)
   mu.a=c(mu.a0f, mu.a1f, mu.a0m, mu.a1m)
   #force(Sigma.a)    #=diag(c(sig2.a0f,sig2.a1f,sig2.a0m,sig2.a1m),4)
+
   Sigma.a <- diag(c(sig2.a0f,sig2.a1f,sig2.a0m,sig2.a1m),4)
 
   ##############This seems questionable
   ##############This seems questionable
   iset=1:I
   #force(iset)  #=1:I
-  force(e.f)   #=rep(1,K)
-  force(e.m)   #=rep(1,K)
+  #force(e.f)   #=rep(1,K)
+  #force(e.m)   #=rep(1,K)
 
-  force(dff)     #=rep(0,K)
-  force(dmm)     #=rep(0,K)
+  #force(dff)     #=rep(0,K)
+  #force(dmm)     #=rep(0,K)
+
+  e.f=rep(1,K)
+  e.m=rep(1,K)
+
+  dff=rep(0,K)
+  dmm=rep(0,K)
+
   ### output matrix
   pi.f_out=matrix(0.5,nsim,K)
   pi.m_out=matrix(0.5,nsim,K)
@@ -420,8 +428,8 @@ JLchemix<-function(nsim=700,
   tau2.f_out=rep(1,nsim)
   tau2.m_out=rep(1,nsim)
 
-  lambda.f_out=matrix(1,nsim,5)
-  lambda.m_out=matrix(1,nsim,5)
+  lambda.f_out=matrix(1,nsim,covariate_num)
+  lambda.m_out=matrix(1,nsim,covariate_num)
 
   L.f_out=matrix(0,nsim,K)
   L.m_out=matrix(0,nsim,K)
@@ -471,8 +479,8 @@ JLchemix<-function(nsim=700,
   L.f_T=matrix(1,(nsim-nburn)/10,K)
   L.m_T=matrix(1,(nsim-nburn)/10,K)
 
-  lambda.f_T=matrix(1,(nsim-nburn)/10,5)
-  lambda.m_T=matrix(1,(nsim-nburn)/10,5)
+  lambda.f_T=matrix(1,(nsim-nburn)/10,covariate_num)
+  lambda.m_T=matrix(1,(nsim-nburn)/10,covariate_num)
   ## make Metropolis-Hastings function for beta.0
   MH_beta.0=function(beta.0.star,beta.0){
 
@@ -785,6 +793,7 @@ JLchemix<-function(nsim=700,
     ####################
     #### update Sigma.b
     ####################
+
     A=random.b-rep(1,J)%*%alpha
     Sigma.b=riwish(J+nu,t(A)%*%A+Sigma.0)
 
@@ -894,12 +903,12 @@ JLchemix<-function(nsim=700,
     }
 
     u.lf=runif(1)
-    lambda.f.star=as.vector(rmvnorm(1,lambda.f,s.lf*cov.lf+s.lf*eps*diag(5)))
+    lambda.f.star=as.vector(rmvnorm(1,lambda.f,s.lf*cov.lf+s.lf*eps*diag(covariate_num)))
     R.lf=MH_lambda.f(lambda.f.star,lambda.f)
 
     if (u.lf<=R.lf){lambda.f=lambda.f.star}
 
-    lambda.f[2:5]=0
+    lambda.f[2:covariate_num]=0
     xlambda.f=covariate_f_mat%*%lambda.f
 
     ######## Male
@@ -913,12 +922,12 @@ JLchemix<-function(nsim=700,
     }
 
     u.lm=runif(1)
-    lambda.m.star=as.vector(rmvnorm(1,lambda.m,s.lm*cov.lm+s.lm*eps*diag(5)))
+    lambda.m.star=as.vector(rmvnorm(1,lambda.m,s.lm*cov.lm+s.lm*eps*diag(covariate_num)))
     R.lm=MH_lambda.m(lambda.m.star,lambda.m)
 
     if (u.lm<=R.lm){lambda.m=lambda.m.star}
 
-    lambda.m[2:5]=0
+    lambda.m[2:covariate_num]=0
     xlambda.m=covariate_m_mat%*%lambda.m
 
 
