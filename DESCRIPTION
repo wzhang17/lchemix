@@ -1,6 +1,6 @@
 Package: lchemix
 Version: 0.0.0.9000
-Title: A couple based joint latent class model with a dependence structure between chemical patterns and the risk
+Title: A Couple Based Joint Latent Class Model with a Dependence Structure Between Chemical Patterns and the Risk
 Authors@R: c(person(given = "Beom Seuk",
            family = "Hwang",
            role = "aut"),
@@ -27,3 +27,7 @@ LazyData: TRUE
 RoxygenNote: 7.0.2
 URL: http://github.com/wzhang17/lchemix.git
 BugReports: http://github.com/wzhang17/lchemix/issues
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

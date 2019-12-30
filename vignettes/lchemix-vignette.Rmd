@@ -1,0 +1,34 @@
+---
+title: "Package lchemix"
+author: "Zhen Chen, Beom Seuk Hwang, Germaine M. Buck Louis, Paul S. Albert, Weimin Zhang" 
+date: "`r Sys.Date()`" 
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Package lchemix}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(lchemix)
+
+```
+Description: fit a couple-based joint latent class model with an interaction between a
+ couple(e.g., female and male partners) and High-dimensional semicontinuous chemical biomarker
+ for each partner of the couple. This formulation introduces a dependence structure between the chemical
+ patterns within a couple and between the chemical patterns and the risk of desease.
+ A Bayesian framework examines the chemical biomarker profile from each member of the couple
+ and the risk of disease. The complex chemical mixtures on each couple link to disease risk through unobserved
+ latent classes. we posit that two sets of latent classes, each characterizing the chemical mixture patterns
+ of one partner of the couple, are linked to the risk of disease through a logistic model with main and
+ interaction  effects between latent classes. The semicontinuous chimical biomarker viarables (1/4 zeros and
+ right-skewed non-zero values) are processed through Tobit modeling framework. Markov chain Monte Carlo
+ algorithms was used to obtain posterior estimates of model parameters.The user supplies data and priors,
+ and a list of posterior estimates of model parameters is returned.
