@@ -16,8 +16,9 @@ Authors@R: c(person(given = "Beom Seuk",
            role = "aut"),
     person(given = "Weimin",
            family = "Zhang",
-           role = "cre",
-           email = "zhangwm@hotmail.com"))
+           email = "zhangwm@hotmail.com",
+           role = "cre"
+           ))
 Description: A joint latent class model where a hierarchical structure exists, with an interaction between female and male partners of a couple. A Bayesian perspective to inference and Markov chain Monte Carlo algorithms to obtain posterior estimates of model parameters.
 License: GPL-2
 Imports: MCMCpack,
@@ -31,3 +32,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Maintainer: Weimin Zhang <zhangwm@hotmail.com>
