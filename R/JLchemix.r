@@ -122,7 +122,7 @@
 #' library(MCMCpack)
 #' library(mvtnorm)
 #' data(sampledata)
-#' try1 <-lchemix:::JLchemix(Yvariable= sampledata[,1], X.f_mat = sampledata[,2:37],
+#' try1 <-lchemix:::JLchemix(nsim=12,nburn=2,Yvariable= sampledata[,1], X.f_mat = sampledata[,2:37],
 #' X.m_mat = sampledata[,38:73], covariate_f_mat = sampledata[,74:78],
 #' covariate_m_mat = sampledata[,79:83])
 
