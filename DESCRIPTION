@@ -1,5 +1,5 @@
 Package: lchemix
-Version: 0.0.0.9000
+Version: 0.1.0
 Title: A Couple Based Joint Latent Class Model with a Dependence Structure Between Chemical Patterns and the Risk
 Authors@R: c(person(given = "Beom Seuk",
            family = "Hwang",

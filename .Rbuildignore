@@ -1,2 +1,7 @@
 ^lchemix\.Rproj$
 ^\.Rproj\.user$
+^\.git$
+^\.Rhistory$
+^\.gitignore$
+^vignettes\.gitignore$
+^\crancomments\.md$
