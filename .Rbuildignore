@@ -5,3 +5,5 @@
 ^\.gitignore$
 ^vignettes\.gitignore$
 ^\crancomments\.md$
+^CRAN-RELEASE$
+^cran-comments\.md$
