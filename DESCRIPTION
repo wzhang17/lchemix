@@ -13,12 +13,12 @@ Authors@R: c(person(given = "Beom Seuk",
            role ="aut"),
     person(given = "Paul S.",
            family = "Albert",
-           role = "aut",
-           comment = "A Bayesian multi-dimensional couple-based latent risk model with an application to infertility"),
+           role = "aut"),
     person(given = "Weimin",
            family = "Zhang",
            email = "zhangwm@hotmail.com",
-           role = "cre")
+           role = "cre",
+           comment = "(2018) A Bayesian multi-dimensional couple-based latent risk model with an application to infertility, Biometrics, 75, 315–325 https://doi.org/10.1111/biom.12972")
            )
 Description: A joint latent class model where a hierarchical structure exists, with an interaction between female and male partners of a couple. A Bayesian perspective to inference and Markov chain Monte Carlo algorithms to obtain posterior estimates of model parameters.
 License: GPL-3
