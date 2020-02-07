@@ -17,10 +17,9 @@ Authors@R: c(person(given = "Beom Seuk",
     person(given = "Weimin",
            family = "Zhang",
            email = "zhangwm@hotmail.com",
-           role = "cre",
-           comment = "(2018) A Bayesian multi-dimensional couple-based latent risk model with an application to infertility, Biometrics, 75, 315–325 https://doi.org/10.1111/biom.12972")
-           )
-Description: A joint latent class model where a hierarchical structure exists, with an interaction between female and male partners of a couple. A Bayesian perspective to inference and Markov chain Monte Carlo algorithms to obtain posterior estimates of model parameters.
+           role = "cre"
+           ))
+Description: A joint latent class model where a hierarchical structure exists, with an interaction between female and male partners of a couple. A Bayesian perspective to inference and Markov chain Monte Carlo algorithms to obtain posterior estimates of model parameters. The reference paper is: Beom Seuk Hwang, Zhen Chen, Germaine M.Buck Louis, Paul S. Albert, (2018) A Bayesian multi-dimensional couple-based latent risk model with an application to infertility Biometrics, 75, 315--325. doi:10.1111/biom.12972"
 License: GPL-3
 Imports: MCMCpack,
         mvtnorm
@@ -33,12 +32,3 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
-Maintainer: Weimin Zhang <zhangwm@hotmail.com>
-Author: Beom Seuk Hwang [aut],
-  Zhen Chen [aut],
-  Germaine M. Buck Louis [aut],
-  Paul S. Albert [aut],
-   Weimin Zhang [cre],
-  (2018) A Bayesian multi-dimensional couple-based latent risk model with an application to infertility,
-  Biometrics, 75, 315–325 https://doi.org/10.1111/biom.12972
-
